@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>AdBLock Detector</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="stylesheet" href="./bootstrap.min.css">
+  <link rel="stylesheet" href="./main.css">
+</head>
+
+<body>
+
+  <nav class="navbar navbar-light bg-light static-top">
+    <div class="container">
+        <a class="navbar-brand" href="#!">AdBLock Detector</a>
+    </div>
+</nav>
+<header class="masthead">
+  <div class="container position-relative">
+      <div class="row justify-content-center">
+          <div class="col-sm-12">
+              <div class="text-center text-white">
+                  <h1 class="mb-5">Detect ad blockers easily!</h1>
+                 
+                  <div id="results"></div>
+                  <p class="ir-p fw-bold mt-5">
+                    Information Retrieval
+                  </p>
+                  <p class="name-p fw-bold mt-3">
+                    Farid Mirzahasani - Javad Aboosi
+                  </p>
+              </div>
+          </div>
+      </div>
+  </div>
+</header>
+    <script type="text/javascript" src="bundle.umd.js"></script>
+    <script>
+      var results = document.getElementById('results');
+      var testDeprecatedToo = false;
+
+      var methods = [
+        'detectAnyAdblocker',
+      ];
+
+      // methods.push('detectAnyAdblocker');
+
+      for (var i in methods) {
+        (function (name) {
+          var pre = document.createElement('pre');
+          var funcName = name + '()';
+          pre.innerHTML = funcName + ' > checking';
+
+          results.appendChild(pre);
+
+          setTimeout(function () {
+            var result = justDetectAdblock[name]();
+            var displayResult = function (detected, addon) {
+              var prefix = funcName + (addon && testDeprecatedToo ? ' [' + addon + ']' : '') + ' > ';
+
+              pre.style.borderRadius="4px";
+              pre.style.width="350px";
+              pre.style.margin="20px auto";
+              pre.style.paddingTop = '20px';
+              pre.style.paddingBottom = '20px';
+              pre.style.fontSize = '1.2rem';
+
+              if (detected) {
+                pre.innerHTML = prefix + 'true';
+                pre.classList.add('text-light');
+                pre.classList.add('bg-success');
+              } 
+              else {
+                pre.innerHTML = prefix + 'false';
+                pre.classList.add('text-light');
+                pre.classList.add('bg-danger');              
+              }
+            };
+
+            if (result instanceof Promise) {
+              result.then(function (detected) {
+                displayResult(detected, 'Promise');
+              });
+            } else {
+              displayResult(result, name === 'isDetected' ? 'deprecated' : '');
+            }
+          }, 500);
+        })(methods[i]);
+      }
+    </script>
+</body>
+
+</html>
+<script type="text/javascript" src="/dist/bundle.umd.js"></script>
+
+<script type="text/javascript">
+  justDetectAdblock.detectAnyAdblocker().then(function (detected) {
+    if (detected) {
+      // an adblocker is detected
+    }
+  });
+</script>
